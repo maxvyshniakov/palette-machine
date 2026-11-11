@@ -61,7 +61,7 @@ function AppContent() {
           style={{ backgroundColor: isDark ? '#1f1f1f' : '#f5f5f5' }}
         >
           <div className="flex items-center gap-3">
-            <h1 className="text-base font-bold">SirvUI Palette Machine</h1>
+            <h1 className="text-base font-bold">Palette Machine</h1>
             <span
               className="text-xs px-2 py-0.5 rounded"
               style={{

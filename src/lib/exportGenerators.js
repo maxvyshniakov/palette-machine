@@ -19,7 +19,7 @@ export const generateExport = (palette, stops, tokens, format) => {
   if (format.startsWith("json")) {
     return JSON.stringify(
       {
-        name: "SirvUI Palette",
+        name: "Palette Machine",
         hues: palette.map((p) => ({
           name: p.name,
           hue: p.H,

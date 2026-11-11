@@ -50,7 +50,9 @@ export const DEFAULT_SETTINGS = {
   reverseInDark: true,
 };
 
-export const STORAGE_KEY = "sirvui-palette-config";
+export const STORAGE_KEY = "palette-machine-config";
+// Key used by earlier versions; read once and migrated to STORAGE_KEY.
+export const LEGACY_STORAGE_KEY = "sirvui-palette-config";
 export const MAX_HISTORY = 50;
 
 export const EXPORT_INFO = {

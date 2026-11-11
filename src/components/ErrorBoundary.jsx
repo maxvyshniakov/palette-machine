@@ -1,5 +1,5 @@
 import React from 'react';
-import { STORAGE_KEY } from '../config/constants';
+import { LEGACY_STORAGE_KEY, STORAGE_KEY } from '../config/constants';
 
 /**
  * Keeps a crash in one tab from blanking the whole app.
@@ -25,6 +25,7 @@ export class ErrorBoundary extends React.Component {
   resetSavedConfig = () => {
     try {
       localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
     } catch {
       // ignore
     }

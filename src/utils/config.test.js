@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
-import { normalizeConfig } from './config';
-import { DEFAULT_HUES, DEFAULT_STOPS } from '../config/constants';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { loadSavedConfig, normalizeConfig } from './config';
+import { DEFAULT_HUES, DEFAULT_STOPS, LEGACY_STORAGE_KEY, STORAGE_KEY } from '../config/constants';
 
 describe('normalizeConfig', () => {
   it('accepts a full valid config', () => {
@@ -36,5 +36,49 @@ describe('normalizeConfig', () => {
     [{ hues: [{ name: 'a', H: 1 }, { name: 'a', H: 2 }] }, 'Duplicate hue name "a"'],
   ])('rejects %j', (config, message) => {
     expect(() => normalizeConfig(config)).toThrow(message);
+  });
+});
+
+describe('loadSavedConfig', () => {
+  let store;
+
+  beforeEach(() => {
+    store = new Map();
+    vi.stubGlobal('localStorage', {
+      getItem: (key) => (store.has(key) ? store.get(key) : null),
+      setItem: (key, value) => store.set(key, String(value)),
+      removeItem: (key) => store.delete(key),
+    });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const saved = { hues: [{ name: 'brand', H: 250, fullGray: false }] };
+
+  it('reads the current key', () => {
+    store.set(STORAGE_KEY, JSON.stringify(saved));
+    expect(loadSavedConfig()).toEqual(saved);
+  });
+
+  it('migrates a config saved under the legacy key', () => {
+    store.set(LEGACY_STORAGE_KEY, JSON.stringify(saved));
+    expect(loadSavedConfig()).toEqual(saved);
+    expect(JSON.parse(store.get(STORAGE_KEY))).toEqual(saved);
+    expect(store.has(LEGACY_STORAGE_KEY)).toBe(false);
+  });
+
+  it('prefers the current key and drops a leftover legacy one', () => {
+    store.set(STORAGE_KEY, JSON.stringify(saved));
+    store.set(LEGACY_STORAGE_KEY, JSON.stringify({ hues: [{ name: 'old', H: 10 }] }));
+    expect(loadSavedConfig()).toEqual(saved);
+    expect(JSON.parse(store.get(STORAGE_KEY))).toEqual(saved);
+    expect(store.has(LEGACY_STORAGE_KEY)).toBe(false);
+  });
+
+  it('returns an empty config when nothing is saved', () => {
+    expect(loadSavedConfig()).toEqual({});
+    expect(store.size).toBe(0);
   });
 });

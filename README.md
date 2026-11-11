@@ -1,4 +1,4 @@
-# SirvUI Palette Machine
+# Palette Machine
 
 An OKLCH color palette generator for design systems. Define a lightness/chroma scale once, apply it to any number of hues, check contrast with APCA or WCAG, and export the result to CSS, Tailwind, SCSS, JSON or Figma Variables.
 

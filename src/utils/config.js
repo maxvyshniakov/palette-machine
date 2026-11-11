@@ -1,4 +1,4 @@
-import { STORAGE_KEY } from "../config/constants";
+import { LEGACY_STORAGE_KEY, STORAGE_KEY } from "../config/constants";
 
 const isNumber = (v) => typeof v === "number" && Number.isFinite(v);
 
@@ -72,10 +72,23 @@ export const normalizeConfig = (config) => {
   return result;
 };
 
+/**
+ * Read the raw saved config, moving it from the legacy key to STORAGE_KEY
+ * when only the legacy key holds one.
+ */
+const readSavedRaw = () => {
+  const current = localStorage.getItem(STORAGE_KEY);
+  const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+  if (legacy === null) return current;
+  if (current === null) localStorage.setItem(STORAGE_KEY, legacy);
+  localStorage.removeItem(LEGACY_STORAGE_KEY);
+  return current ?? legacy;
+};
+
 /** Read the saved config from localStorage, ignoring anything invalid. */
 export const loadSavedConfig = () => {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = readSavedRaw();
     return saved ? normalizeConfig(JSON.parse(saved)) : {};
   } catch (e) {
     console.warn("Ignoring saved palette config:", e);
